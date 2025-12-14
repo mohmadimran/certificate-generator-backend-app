@@ -3,8 +3,12 @@ const router = express.Router();
 const {
   generateCertificate
 } = require("../services/ceertificateServices");
+const validateCertificateRequest = require("./middleware/validateCertificateRequest")
 
-router.post("/generate", async (req, res) => {
+
+router.post("/generate",validateCertificateRequest , async (req, res) => {
+
+ 
   try {
     const result = await generateCertificate(req.body);
     res.status(200).json({
