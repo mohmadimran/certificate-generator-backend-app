@@ -5,7 +5,6 @@ const { v4: uuidv4 } = require("uuid");
 const certificateTemplate = require("../templetes/certificateTemplete");
 const sendEmail = require("./emailService");
 
-// Ensure directories exist (SAFE & RELIABLE)
 const pdfDir = path.join(__dirname, "../generated/pdf");
 const jpgDir = path.join(__dirname, "../generated/jpg");
 
