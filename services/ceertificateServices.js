@@ -8,7 +8,7 @@ const sendEmail = require("./emailService");
 const pdfDir = path.join(__dirname, "../generated/pdf");
 const jpgDir = path.join(__dirname, "../generated/jpg");
 
-[pdfDir, jpgDir].forEach(dir => {
+[pdfDir, jpgDir].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -37,30 +37,46 @@ async function generateCertificate(data) {
 
   try {
     browser = await puppeteer.launch({
-      args: ["--no-sandbox"]
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu"
+      ],
     });
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
 
-    await page.pdf({
-      path: pdfPath,
-      format: "A4"
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
     });
 
+    // Generate PDF
+    await page.pdf({
+      path: pdfPath,
+      format: "A4",
+      printBackground: true,
+    });
+
+    // Generate JPG
     await page.screenshot({
       path: jpgPath,
       type: "jpeg",
-      fullPage: true
+      fullPage: true,
     });
 
+    // Send email with attachments
     await sendEmail(email, pdfPath, jpgPath);
 
     return {
       pdf: pdfPath,
-      jpg: jpgPath
+      jpg: jpgPath,
     };
 
+  } catch (error) {
+    console.error("Certificate generation failed:", error);
+    throw error;
   } finally {
     if (browser) {
       await browser.close();
