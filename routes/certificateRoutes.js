@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   generateCertificate
 } = require("../services/ceertificateServices");
-const validateCertificateRequest = require("./middleware/validateCertificateRequest")
+const validateCertificateRequest = require("../middleware/validateCertificateRequest")
 
 
 router.post("/generate",validateCertificateRequest , async (req, res) => {
