@@ -1,23 +1,28 @@
 const nodemailer = require("nodemailer");
 
-async function sendEmail(to, pdfPath, jpgPath) {
-  const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, 
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  connectionTimeout: 10000, 
+});
 
+async function sendEmail(to, pdfPath) {
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: `"Certificate Generator" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Your Certificate",
-    text: "Please find attached your certificate.",
+    text: "Please find your certificate attached.",
     attachments: [
-      { path: pdfPath },
-      { path: jpgPath }
-    ]
+      {
+        filename: "certificate.pdf",
+        path: pdfPath,
+      },
+    ],
   });
 }
 
